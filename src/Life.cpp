@@ -1,7 +1,8 @@
 #include "Life.h"
 
 Life::Life(int height, int width)
-    : m_data(height, std::vector<bool>(width, false))
+    : m_data(height, std::vector<bool>(width, false)),
+    m_height{ height }, m_width{ width }
 {
 }
 
@@ -21,36 +22,23 @@ void Life::clear()
     std::fill(m_data.begin(), m_data.end(), std::vector<bool>(width, false));
 }
 
-// no you have too many for loops
 void Life::update()
 {
-    std::vector<std::vector<bool>> newData{ m_data };
-    int height = m_data.size();
-    for (int i{ 0 }; i < height; ++i)
+    auto newData{ m_data };
+    for (int y{ 0 }; y < m_height; ++y)
     {
-        int width = m_data[i].size();
-        for (int j{ 0 }; j < width; ++j)
+        for (int x{ 0 }; x < m_width; ++x)
         {
-            int surroundingTotal{ 0 };
-            for (int row{ i - 1 }; row <= i + 1; ++row)
+            int total = getSurroundingTotal(y, x);
+            if (m_data[y][x] == true)
             {
-                int modRow{ row < 0 ? height + row : row % height};
-                for (int col{ j - 1 }; col <= j + 1; ++col)
-                {
-                    int modCol{ col < 0 ? width + col : col % width };
-                    surroundingTotal += m_data[modRow][modCol];
-                }
-            }
-            surroundingTotal -= m_data[i][j];
-            if (m_data[i][j] == true)
-            {
-                if (surroundingTotal < 2 || surroundingTotal > 3)
-                    newData[i][j] = false;
+                if (total < 2 || total > 3)
+                    newData[y][x] = false;
             }
             else
             {
-                if (surroundingTotal == 3)
-                    newData[i][j] = true;
+                if (total == 3)
+                    newData[y][x] = true;
             }
         }
     }
@@ -64,9 +52,9 @@ void Life::draw(WINDOW* win)
     {
         for (const bool& pixel : arr)
         {
-            waddch(win, ' ' | (pixel ? A_REVERSE : A_NORMAL));
-            waddch(win, ' ' | (pixel ? A_REVERSE : A_NORMAL));
-            //waddch(win, pixel ? ACS_BLOCK : ' ');
+            attron(pixel ? A_REVERSE : A_NORMAL);
+            waddstr(win, "  ");
+            attroff(A_REVERSE);
         }
     }
 }
@@ -74,4 +62,20 @@ void Life::draw(WINDOW* win)
 const std::vector<std::vector<bool>>& Life::getData() const
 {
     return m_data;
+}
+
+int Life::getSurroundingTotal(int y, int x)
+{
+    int surroundingTotal{ 0 };
+    for (int row{ y - 1 }; row <= y + 1; ++row)
+    {
+        int modRow{ row < 0 ? m_height + row : row % m_height };
+        for (int col{ x - 1 }; col <= x + 1; ++col)
+        {
+            int modCol{ col < 0 ? m_width + col : col % m_width };
+            surroundingTotal += m_data[modRow][modCol];
+        }
+    }
+    surroundingTotal -= m_data[y][x];
+    return surroundingTotal;
 }

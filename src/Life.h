@@ -18,5 +18,9 @@ public:
 
     const std::vector<std::vector<bool>>& getData() const;
 private:
+    int getSurroundingTotal(int y, int x);
+
+    int m_height = 0;
+    int m_width = 0;
     std::vector<std::vector<bool>> m_data = {};
 };
