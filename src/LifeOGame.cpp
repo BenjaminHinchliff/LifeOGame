@@ -10,8 +10,13 @@
 
 // curses
 // this must be before the other includes for the definition to have an effect
-#define NCURSES_MOUSE_VERSION
-#include <curses.h>
+#ifdef _WIN32
+    #define PDC_NCMOUSE
+    #include <curses.h>
+#else
+    #include <ncurses.h>
+#endif // _WIN32
+
 
 // local
 #include "Life.h"
@@ -72,7 +77,6 @@ int main()
 
                     if (eve.bstate & BUTTON1_CLICKED)
                         board.togglePixel(eve.y, eve.x / 2);
-
                 }
                 break;
             }
@@ -89,6 +93,14 @@ int main()
 
         if (getmouse(&eve) == OK)
         {
+            if (eve.bstate & BUTTON1_PRESSED)
+                mouseDown = true;
+            else if (eve.bstate & BUTTON1_RELEASED)
+                mouseDown = false;
+
+            if (eve.bstate & BUTTON1_CLICKED)
+                board.togglePixel(eve.y, eve.x / 2);
+
             eve.x = eve.x / 2 * 2;
             move(eve.y, eve.x);
             if (mouseDown)
