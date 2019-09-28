@@ -85,7 +85,7 @@
     <LibraryPath>..\lib\;$(LibraryPath)</LibraryPath>
     <IncludePath>..\include\;$(IncludePath)</IncludePath>
     <OutDir>..\compiled\MVSC\</OutDir>
-    <TargetName>life.exe</TargetName>
+    <TargetName>life</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
