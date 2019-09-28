@@ -12,6 +12,7 @@ public:
     void setPixel(int y, int x, bool value);
     void togglePixel(int y, int x);
     void clear();
+    void resize(int height, int width);
 
     void update();
     void draw(WINDOW* win);

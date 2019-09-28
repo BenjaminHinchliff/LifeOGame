@@ -23,6 +23,7 @@ public:
 
     void setMessage(std::string message);
     void setMessage(const char* message);
+    void moveToRow(int row);
 private:
     Align m_align;
     int m_row;

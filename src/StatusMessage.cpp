@@ -12,9 +12,7 @@ StatusMessage::StatusMessage(int row, Align align, const char* message)
 
 void StatusMessage::draw(WINDOW* win)
 {
-    int rows;
-    int cols;
-    getmaxyx(win, rows, cols);
+    int cols{ getmaxx(win) };
 
     switch (m_align)
     {
@@ -38,4 +36,9 @@ void StatusMessage::setMessage(std::string message)
 void StatusMessage::setMessage(const char* message)
 {
     setMessage(std::string{ message });
+}
+
+void StatusMessage::moveToRow(int row)
+{
+    m_row = row;
 }

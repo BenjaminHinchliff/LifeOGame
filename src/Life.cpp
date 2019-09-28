@@ -22,6 +22,14 @@ void Life::clear()
     std::fill(m_data.begin(), m_data.end(), std::vector<bool>(width, false));
 }
 
+void Life::resize(int height, int width)
+{
+    m_data.clear();
+    m_data = std::vector<std::vector<bool>>(height, std::vector<bool>(width, false));
+    m_height = height;
+    m_width = width;
+}
+
 void Life::update()
 {
     auto newData{ m_data };
@@ -52,9 +60,9 @@ void Life::draw(WINDOW* win)
     {
         for (const bool& pixel : arr)
         {
-            attron(pixel ? A_REVERSE : A_NORMAL);
-            waddstr(win, "  ");
-            attroff(A_REVERSE);
+            const chtype toApply{ pixel ? A_REVERSE : A_NORMAL };
+            waddch(win, inch() | toApply);
+            waddch(win, inch() | toApply);
         }
     }
 }

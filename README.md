@@ -10,6 +10,8 @@ With pdcurses.
 
 **MOUSE1** to toggle a cell
 
+**RIGHT ARROW** to step forward
+
 **r** to clear the screen
 
 **q** to quit
