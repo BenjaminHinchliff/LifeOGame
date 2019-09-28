@@ -22,4 +22,4 @@ if you've got a mac you can compile it with ncurses and it _should_ (hopefully) 
 I'll be honest though, this is all theoretical, I don't have a mac to test it on.
 
 # Legal
-Just GPLv3. Please keep it open source in other words. (Although what you would do that is commercial with this is beyond me)
+Just GPL. Please keep it open source in other words. (Although what you would do that is commercial with this is beyond me)
