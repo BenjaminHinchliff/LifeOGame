@@ -24,10 +24,10 @@ void Life::clear()
 
 void Life::resize(int height, int width)
 {
-    m_data.clear();
-    m_data = std::vector<std::vector<bool>>(height, std::vector<bool>(width, false));
     m_height = height;
     m_width = width;
+    m_data.resize(height);
+    for_each(m_data.begin(), m_data.end(), [=](std::vector<bool>& arr) { arr.resize(width); });
 }
 
 void Life::update()
@@ -56,12 +56,12 @@ void Life::update()
 void Life::draw(WINDOW* win)
 {
     wmove(win, 0, 0);
-    for (const auto& arr : m_data)
+    for (int y{ 0 }; y < static_cast<int>(m_data.size()); ++y)
     {
-        for (const bool& pixel : arr)
+        for (int x{ 0 }; x < static_cast<int>(m_data[y].size()); ++x)
         {
-            const chtype toApply{ pixel ? A_REVERSE : A_NORMAL };
-            waddch(win, inch() | toApply);
+            const chtype toApply{ m_data[y][x] ? A_REVERSE : A_NORMAL };
+            mvwaddch(win, y, x * 2, inch() | toApply);
             waddch(win, inch() | toApply);
         }
     }
