@@ -24,7 +24,7 @@
 
 
 
-int main()
+int main(int argc, char* argv[])
 {
     initscr();
     curs_set(0);
@@ -39,14 +39,14 @@ int main()
     int cols;
     getmaxyx(stdscr, rows, cols);
 
-    Life board{ rows, cols / 2 };
+    Life board{ rows, cols / 2, (argc > 1) ? argv[1] : "" };
 
     StatusMessage pauseStatus{ rows - 1, Align::CENTER, "PAUSED" };
 
     StatusMessage mouseLoc{ rows - 1, Align::RIGHT, "" };
 
     bool shouldExit{ false };
-    bool paused{ false };
+    bool paused{ true };
     bool step{ false };
     bool mouseDown{ false };
 
@@ -125,7 +125,6 @@ int main()
             if (eve.bstate & BUTTON1_CLICKED)
                 board.togglePixel(eve.y, eve.x);
 
-            move(eve.y, eve.x * 2);
             if (mouseDown)
             {
                 if (lastEve.x != eve.x || lastEve.y != eve.y)
@@ -138,6 +137,7 @@ int main()
             {
                 for (int i{ 0 }; i < 2; ++i)
                 {
+                    move(eve.y, eve.x * 2 + i);
                     addch(inch() | A_REVERSE);
                 }
             }

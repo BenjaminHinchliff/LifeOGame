@@ -2,13 +2,16 @@
 
 #include <vector>
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <cctype>
 
 #include <curses.h>
 
 class Life
 {
 public:
-    Life(int height, int width);
+    Life(int height, int width, const char* initialRLE = "");
 
     void setPixel(int y, int x, bool value);
     void togglePixel(int y, int x);

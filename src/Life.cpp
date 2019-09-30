@@ -1,9 +1,53 @@
 #include "Life.h"
 
-Life::Life(int height, int width)
+#include <iostream>
+
+Life::Life(int height, int width, const char* initialRLE)
     : m_data(height, std::vector<bool>(width, false)),
     m_height{ height }, m_width{ width }
 {
+    std::string initer{ initialRLE };
+    int yPos{ 0 };
+    int xPos{ 0 };
+    int numeral{ 0 };
+    char curChar{};
+    for (int charInd{ 0 }; initer[charInd] != '!' && charInd < initer.length(); ++charInd)
+    {
+        std::cout << initer[charInd] << '\n';
+        if (initer[charInd] == '$')
+        {
+            ++yPos;
+            xPos = 0;
+            continue;
+        }
+        numeral = 0;
+        while (std::isdigit(initer[charInd]))
+        {
+            numeral = numeral * 10 + (initer[charInd++] - '0');
+        }
+        std::cout << numeral << '\n';
+        if (numeral != 0)
+        {
+            std::cout << initer[charInd] << '\n';
+            for (int j{ 0 }; j < numeral; ++j)
+            {
+                m_data[yPos][xPos++] = (initer[charInd] == 'o');
+            }
+        }
+        else
+        {
+            m_data[yPos][xPos++] = (initer[charInd] == 'o');
+        }
+
+    }
+    for (const auto& arr : m_data)
+    {
+        for (const auto& boolean : arr)
+        {
+            std::cout << std::boolalpha << boolean << ' ';
+        }
+        std::cout << '\n';
+    }
 }
 
 void Life::setPixel(int y, int x, bool value)
