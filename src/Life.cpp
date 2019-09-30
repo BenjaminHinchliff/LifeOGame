@@ -1,7 +1,5 @@
 #include "Life.h"
 
-#include <iostream>
-
 Life::Life(int height, int width, const char* initialRLE)
     : m_data(height, std::vector<bool>(width, false)),
     m_height{ height }, m_width{ width }
@@ -25,10 +23,8 @@ Life::Life(int height, int width, const char* initialRLE)
         {
             numeral = numeral * 10 + (initer[charInd++] - '0');
         }
-        std::cout << numeral << '\n';
         if (numeral != 0)
         {
-            std::cout << initer[charInd] << '\n';
             for (int j{ 0 }; j < numeral; ++j)
             {
                 m_data[yPos][xPos++] = (initer[charInd] == 'o');
@@ -39,14 +35,6 @@ Life::Life(int height, int width, const char* initialRLE)
             m_data[yPos][xPos++] = (initer[charInd] == 'o');
         }
 
-    }
-    for (const auto& arr : m_data)
-    {
-        for (const auto& boolean : arr)
-        {
-            std::cout << std::boolalpha << boolean << ' ';
-        }
-        std::cout << '\n';
     }
 }
 
