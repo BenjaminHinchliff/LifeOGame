@@ -11,7 +11,6 @@ Life::Life(int height, int width, const char* initialRLE)
     char curChar{};
     for (int charInd{ 0 }; initer[charInd] != '!' && charInd < initer.length(); ++charInd)
     {
-        std::cout << initer[charInd] << '\n';
         if (initer[charInd] == '$')
         {
             ++yPos;
