@@ -9,7 +9,8 @@
 #include <chrono>
 
 // curses
-// this must be before the other includes for the definition to have an effect
+// this must be before the local includes 
+// for definitions to have an effect
 #ifdef _WIN32
     #define PDC_NCMOUSE
     #include <curses.h>
@@ -28,7 +29,7 @@ struct ProgramStatusData
     StatusMessage& mouseLoc;
     StatusMessage& pauseStatus;
     bool shouldExit{ false };
-    bool paused{ false };
+    bool paused{ true };
     bool step{ false };
     bool mouseDown{ false };
 };

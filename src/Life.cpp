@@ -16,14 +16,14 @@ Life::Life(int height, int width, const char* initialRLEFile)
     rleString << rleFile.rdbuf();
     std::string initer{ rleString.str() };
 
-    // remove extranious lines (comments, author, name)
+    // remove extranious lines (comments, author, name, rules, etc)
     std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O", "#P", "#R", "#r" };
     while (strContainsStrsInArr(initer, ignoreLineChars))
     {
         initer.erase(0, initer.find('\n') + 1);
     }
 
-    // check pattern can fit on display and ignore the rule for now
+    // check pattern can fit on display
     // TODO: maybe clean this up a bit? I don't know if I can though
     int parseIndStart{ static_cast<int>(initer.find('=')) + 1 };
     int patternWidth{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
@@ -33,7 +33,39 @@ Life::Life(int height, int width, const char* initialRLEFile)
     {
         throw std::length_error{ "pattern must fit on screen" };
     }
+    
 
+    // get rules and add them to member vector
+    if (initer.find('B') != std::string::npos
+        && initer.find('S') != std::string::npos)
+    {
+        // B/S rule notation
+        auto ind{ initer.begin() + initer.find('B') + 1 };
+        while (std::isdigit(*ind))
+        {
+            m_bornRules.push_back(*ind++ - '0');
+        }
+        ind = initer.begin() + initer.find('S') + 1;
+        while (std::isdigit(*ind))
+        {
+            m_survivalRules.push_back(*ind++ - '0');
+        }
+    }
+    else
+    {
+        // stupid annoying rule notation
+        auto ind{ initer.begin() + initer.find('/') + 1 };
+        while (std::isdigit(*ind))
+        {
+            m_bornRules.push_back(*ind++ - '0');
+        }
+        ind = initer.begin() + initer.find('/') - 1;
+        while (std::isdigit(*ind))
+        {
+            m_survivalRules.push_back(*ind-- - '0');
+        }
+    }
+    
     // get rid of data line
     initer.erase(0, initer.find('\n') + 1);
 
@@ -44,7 +76,7 @@ Life::Life(int height, int width, const char* initialRLEFile)
         initer.erase(delChar, 1);
     }
 
-
+    // iterate through the string and add the approprate dead or alive pixels to the screen
     int yPos{ 0 };
     int xPos{ 0 };
     int numeral{ 0 };
@@ -114,12 +146,12 @@ void Life::update()
             int total = getSurroundingTotal(y, x);
             if (m_data[y][x] == true)
             {
-                if (total < 2 || total > 3)
+                if (std::find(m_survivalRules.begin(), m_survivalRules.end(), total) == m_survivalRules.end())
                     newData[y][x] = false;
             }
             else
             {
-                if (total == 3)
+                if (std::find(m_bornRules.begin(), m_bornRules.end(), total) != m_bornRules.end())
                     newData[y][x] = true;
             }
         }
