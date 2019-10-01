@@ -17,7 +17,7 @@ Life::Life(int height, int width, const char* initialRLEFile)
     std::string initer{ rleString.str() };
 
     // remove extranious lines (comments, author, name)
-    std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O" };
+    std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O", "#P", "#R", "#r" };
     while (strContainsStrsInArr(initer, ignoreLineChars))
     {
         initer.erase(0, initer.find('\n') + 1);
