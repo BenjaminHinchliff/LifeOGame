@@ -1,26 +1,68 @@
 #include "Life.h"
 
-Life::Life(int height, int width, const char* initialRLE)
+#include <iostream>
+
+Life::Life()
+    : m_height{ 0 }, m_width{ 0 }, m_data{}
+{
+}
+
+Life::Life(int height, int width, const char* initialRLEFile)
     : m_data(height, std::vector<bool>(width, false)),
     m_height{ height }, m_width{ width }
 {
-    std::string initer{ initialRLE };
+    std::ifstream rleFile{ initialRLEFile };
+    std::stringstream rleString;
+    rleString << rleFile.rdbuf();
+    std::string initer{ rleString.str() };
+
+    // remove extranious lines (comments, author, name)
+    std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O" };
+    while (strContainsStrsInArr(initer, ignoreLineChars))
+    {
+        initer.erase(0, initer.find('\n') + 1);
+    }
+
+    // check pattern can fit on display and ignore the rule for now
+    // TODO: maybe clean this up a bit? I don't know if I can though
+    int parseIndStart{ static_cast<int>(initer.find('=')) + 1 };
+    int patternWidth{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
+    parseIndStart = static_cast<int>(initer.find('=', parseIndStart + 1)) + 1;
+    int patternHeight{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
+    if (patternHeight > m_height || patternWidth > m_width)
+    {
+        throw std::length_error{ "pattern must fit on screen" };
+    }
+
+    // get rid of data line
+    initer.erase(0, initer.find('\n') + 1);
+
+    // delete newline character in the pattern
+    int delChar{};
+    while ((delChar = initer.find('\n')) != std::string::npos)
+    {
+        initer.erase(delChar, 1);
+    }
+
+
     int yPos{ 0 };
     int xPos{ 0 };
     int numeral{ 0 };
-    char curChar{};
-    for (int charInd{ 0 }; initer[charInd] != '!' && charInd < initer.length(); ++charInd)
+    for (int charInd{ 0 }; initer[charInd] != '!' && charInd < static_cast<int>(initer.length()); ++charInd)
     {
+        
         if (initer[charInd] == '$')
         {
             ++yPos;
             xPos = 0;
+            numeral = 0;
             continue;
         }
-        numeral = 0;
-        while (std::isdigit(initer[charInd]))
+        
+        if (std::isdigit(initer[charInd]))
         {
-            numeral = numeral * 10 + (initer[charInd++] - '0');
+            numeral = numeral * 10 + (initer[charInd] - '0');
+            continue;
         }
         if (numeral != 0)
         {
@@ -28,6 +70,7 @@ Life::Life(int height, int width, const char* initialRLE)
             {
                 m_data[yPos][xPos++] = (initer[charInd] == 'o');
             }
+            numeral = 0;
         }
         else
         {
@@ -117,4 +160,16 @@ int Life::getSurroundingTotal(int y, int x)
     }
     surroundingTotal -= m_data[y][x];
     return surroundingTotal;
+}
+
+bool Life::strContainsStrsInArr(std::string toSearch, std::vector<std::string> searchStrs)
+{
+    for (std::string str : searchStrs)
+    {
+        if (toSearch.find(str) != std::string::npos)
+        {
+            return true;
+        }
+    }
+    return false;
 }
