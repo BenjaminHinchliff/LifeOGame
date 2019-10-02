@@ -9,8 +9,8 @@
 #include <chrono>
 
 // curses
-// this must be before the local includes 
-// for definitions to have an effect
+// this must be before the local includes so
+// definitions have an effect with curses
 #ifdef _WIN32
     #define PDC_NCMOUSE
     #include <curses.h>
