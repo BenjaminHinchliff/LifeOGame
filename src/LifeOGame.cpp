@@ -34,7 +34,7 @@ struct ProgramStatusData
     bool mouseDown{ false };
 };
 
-void processInput(ProgramStatusData& data);
+void processInput(ProgramStatusData& data, MEVENT& eve);
 void processMouseState(ProgramStatusData& data, MEVENT& lastEve, MEVENT& eve);
 
 int main(int argc, char* argv[])
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     nodelay(stdscr, true);
     keypad(stdscr, true);
 
-    mousemask(REPORT_MOUSE_POSITION | BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, nullptr);
+    mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, nullptr);
 
     int rows;
     int cols;
@@ -69,15 +69,16 @@ int main(int argc, char* argv[])
 
     ProgramStatusData statusData{ board, mouseLoc, pauseStatus };
 
-    MEVENT eve;
+    MEVENT eve{};
     MEVENT lastEve{};
     while (!statusData.shouldExit)
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        processInput(statusData);
+        processInput(statusData, eve);
 
-        processMouseState(statusData, lastEve, eve);
+        if (has_mouse())
+            processMouseState(statusData, lastEve, eve);
 
         using namespace std::string_literals;
         mouseLoc.setMessage("X: "s + std::to_string(eve.x) + " Y: "s + std::to_string(eve.y));
@@ -113,7 +114,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void processInput(ProgramStatusData& data)
+void processInput(ProgramStatusData& data, MEVENT& geve)
 {
     int ch;
     while ((ch = getch()) != ERR)
@@ -132,17 +133,33 @@ void processInput(ProgramStatusData& data)
         case 's':
             data.step = true;
             break;
+        case KEY_RIGHT:
+            geve.x += 1;
+            break;
+        case KEY_LEFT:
+            geve.x -= 1;
+            break;
+        case KEY_UP:
+            geve.y -= 1;
+            break;
+        case KEY_DOWN:
+            geve.y += 1;
+            break;
+        case 10:
+        case KEY_ENTER:
+            data.board.togglePixel(geve.y, geve.x);
+            break;
         case KEY_MOUSE:
-            MEVENT eve;
-            if (getmouse(&eve) == OK)
+            if (getmouse(&geve) == OK)
             {
-                if (eve.bstate & BUTTON1_PRESSED)
+                geve.x /= 2;
+                if (geve.bstate & BUTTON1_PRESSED)
                     data.mouseDown = true;
-                else if (eve.bstate & BUTTON1_RELEASED)
+                else if (geve.bstate & BUTTON1_RELEASED)
                     data.mouseDown = false;
 
-                if (eve.bstate & BUTTON1_CLICKED)
-                    data.board.togglePixel(eve.y, eve.x / 2);
+                if (geve.bstate & BUTTON1_CLICKED)
+                    data.board.togglePixel(geve.y, geve.x);
             }
             break;
         case KEY_RESIZE:
@@ -169,17 +186,20 @@ void processInput(ProgramStatusData& data)
 
 void processMouseState(ProgramStatusData& data, MEVENT& lastEve, MEVENT& eve)
 {
-    if (getmouse(&eve) == OK)
+    if (data.mouseDown)
     {
-        eve.x = eve.x / 2;
-
-        if (data.mouseDown)
+        getmouse(&eve);
+        eve.x /= 2;
+        if (lastEve.x != eve.x || lastEve.y != eve.y)
         {
-            if (lastEve.x != eve.x || lastEve.y != eve.y)
-            {
-                data.board.togglePixel(eve.y, eve.x);
-            }
-            lastEve = eve;
+            data.board.togglePixel(eve.y, eve.x);
         }
+        lastEve = eve;
     }
+    //if (getmouse(&eve) == OK)
+    //{
+    //    eve.x = eve.x / 2;
+    //    
+    //}
+    
 }
