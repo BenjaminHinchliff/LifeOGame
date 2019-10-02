@@ -30,7 +30,7 @@ private:
 
     int m_height = 0;
     int m_width = 0;
-    std::vector<int> m_bornRules = {};
-    std::vector<int> m_survivalRules = {};
+    std::vector<int> m_bornRules = { 3 };
+    std::vector<int> m_survivalRules = { 2, 3 };
     std::vector<std::vector<bool>> m_data = {};
 };
