@@ -11,107 +11,105 @@ Life::Life(int height, int width, const char* initialRLEFile)
     : m_data(height, std::vector<bool>(width, false)),
     m_height{ height }, m_width{ width }
 {
-    if (initialRLEFile != "")
-    {
         std::ifstream rleFile{ initialRLEFile };
         std::stringstream rleString;
         rleString << rleFile.rdbuf();
         std::string initer{ rleString.str() };
-
-        // remove extranious lines (comments, author, name, rules, etc)
-        std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O", "#P", "#R", "#r" };
-        while (strContainsStrsInArr(initer, ignoreLineChars))
+        if (initer != "")
         {
-            initer.erase(0, initer.find('\n') + 1);
-        }
-
-        // check pattern can fit on display
-        // TODO: maybe clean this up a bit? I don't know if I can though
-        int parseIndStart{ static_cast<int>(initer.find('=')) + 1 };
-        int patternWidth{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
-        parseIndStart = static_cast<int>(initer.find('=', parseIndStart + 1)) + 1;
-        int patternHeight{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
-        if (patternHeight > m_height || patternWidth > m_width)
-        {
-            throw std::length_error{ "pattern must fit on screen" };
-        }
-
-        m_bornRules.clear();
-        m_survivalRules.clear();
-        // get rules and add them to member vector
-        if (initer.find('B') != std::string::npos
-            && initer.find('S') != std::string::npos)
-        {
-            // B/S rule notation
-            auto ind{ initer.begin() + initer.find('B') + 1 };
-            while (std::isdigit(*ind))
+            // remove extranious lines (comments, author, name, rules, etc)
+            std::vector<std::string> ignoreLineChars{ "#C", "#N", "#O", "#P", "#R", "#r" };
+            while (strContainsStrsInArr(initer, ignoreLineChars))
             {
-                m_bornRules.push_back(*ind++ - '0');
-            }
-            ind = initer.begin() + initer.find('S') + 1;
-            while (std::isdigit(*ind))
-            {
-                m_survivalRules.push_back(*ind++ - '0');
-            }
-        }
-        else
-        {
-            // stupid annoying rule notation
-            auto ind{ initer.begin() + initer.find('/') + 1 };
-            while (std::isdigit(*ind))
-            {
-                m_bornRules.push_back(*ind++ - '0');
-            }
-            ind = initer.begin() + initer.find('/') - 1;
-            while (std::isdigit(*ind))
-            {
-                m_survivalRules.push_back(*ind-- - '0');
-            }
-        }
-
-        // get rid of data line
-        initer.erase(0, initer.find('\n') + 1);
-
-        // delete newline character in the pattern
-        int delChar{};
-        while ((delChar = initer.find('\n')) != std::string::npos)
-        {
-            initer.erase(delChar, 1);
-        }
-
-        // iterate through the string and add the approprate dead or alive pixels to the screen
-        int yPos{ 0 };
-        int xPos{ 0 };
-        int numeral{ 0 };
-        for (int charInd{ 0 }; initer[charInd] != '!' && charInd < static_cast<int>(initer.length()); ++charInd)
-        {
-
-            if (initer[charInd] == '$')
-            {
-                ++yPos;
-                xPos = 0;
-                numeral = 0;
-                continue;
+                initer.erase(0, initer.find('\n') + 1);
             }
 
-            if (std::isdigit(initer[charInd]))
+            // check pattern can fit on display
+            // TODO: maybe clean this up a bit? I don't know if I can though
+            int parseIndStart{ static_cast<int>(initer.find('=')) + 1 };
+            int patternWidth{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
+            parseIndStart = static_cast<int>(initer.find('=', parseIndStart + 1)) + 1;
+            int patternHeight{ stoi(initer.substr(parseIndStart, initer.find(',') - parseIndStart)) };
+            if (patternHeight > m_height || patternWidth > m_width)
             {
-                numeral = numeral * 10 + (initer[charInd] - '0');
-                continue;
+                throw std::length_error{ "pattern must fit on screen" };
             }
-            if (numeral != 0)
+
+            m_bornRules.clear();
+            m_survivalRules.clear();
+            // get rules and add them to member vector
+            if (initer.find('B') != std::string::npos
+                && initer.find('S') != std::string::npos)
             {
-                for (int j{ 0 }; j < numeral; ++j)
+                // B/S rule notation
+                auto ind{ initer.begin() + initer.find('B') + 1 };
+                while (std::isdigit(*ind))
                 {
-                    m_data[yPos][xPos++] = (initer[charInd] == 'o');
+                    m_bornRules.push_back(*ind++ - '0');
                 }
-                numeral = 0;
+                ind = initer.begin() + initer.find('S') + 1;
+                while (std::isdigit(*ind))
+                {
+                    m_survivalRules.push_back(*ind++ - '0');
+                }
             }
             else
             {
-                m_data[yPos][xPos++] = (initer[charInd] == 'o');
+                // stupid annoying rule notation
+                auto ind{ initer.begin() + initer.find('/') + 1 };
+                while (std::isdigit(*ind))
+                {
+                    m_bornRules.push_back(*ind++ - '0');
+                }
+                ind = initer.begin() + initer.find('/') - 1;
+                while (std::isdigit(*ind))
+                {
+                    m_survivalRules.push_back(*ind-- - '0');
+                }
             }
 
+            // get rid of data line
+            initer.erase(0, initer.find('\n') + 1);
+
+            // delete newline character in the pattern
+            int delChar{};
+            while ((delChar = initer.find('\n')) != std::string::npos)
+            {
+                initer.erase(delChar, 1);
+            }
+
+            // iterate through the string and add the approprate dead or alive pixels to the screen
+            int yPos{ 0 };
+            int xPos{ 0 };
+            int numeral{ 0 };
+            for (int charInd{ 0 }; initer[charInd] != '!' && charInd < static_cast<int>(initer.length()); ++charInd)
+            {
+
+                if (initer[charInd] == '$')
+                {
+                    ++yPos;
+                    xPos = 0;
+                    numeral = 0;
+                    continue;
+                }
+
+                if (std::isdigit(initer[charInd]))
+                {
+                    numeral = numeral * 10 + (initer[charInd] - '0');
+                    continue;
+                }
+                if (numeral != 0)
+                {
+                    for (int j{ 0 }; j < numeral; ++j)
+                    {
+                        m_data[yPos][xPos++] = (initer[charInd] == 'o');
+                    }
+                    numeral = 0;
+                }
+                else
+                {
+                    m_data[yPos][xPos++] = (initer[charInd] == 'o');
+                }
         }
     }
 }
