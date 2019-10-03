@@ -182,6 +182,13 @@ void processInput(ProgramStatusData& data, MEVENT& geve)
         data.board.update();
         data.step = false;
     }
+
+    int rows;
+    int cols;
+    getmaxyx(stdscr, rows, cols);
+    cols /= 2;
+    geve.x = (geve.x % cols + cols) % cols;
+    geve.y = (geve.y % rows + rows) % rows;
 }
 
 void processMouseState(ProgramStatusData& data, MEVENT& lastEve, MEVENT& eve)
@@ -189,7 +196,13 @@ void processMouseState(ProgramStatusData& data, MEVENT& lastEve, MEVENT& eve)
     if (data.mouseDown)
     {
         getmouse(&eve);
+
+        int rows;
+        int cols;
+        getmaxyx(stdscr, rows, cols);
+
         eve.x /= 2;
+        
         if (lastEve.x != eve.x || lastEve.y != eve.y)
         {
             data.board.togglePixel(eve.y, eve.x);
