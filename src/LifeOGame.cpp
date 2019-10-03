@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
         for (int i{ 0 }; i < 2; ++i)
         {
             move(eve.y, eve.x * 2 + i);
-            addch(inch() | A_REVERSE);
+            addch(inch() | A_BLINK);
         }
 
         // refresh the screen
