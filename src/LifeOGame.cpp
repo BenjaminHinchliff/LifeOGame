@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     nodelay(stdscr, true);
     keypad(stdscr, true);
 
-    mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, nullptr);
+    bool hasMouse{ static_cast<bool>(mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, nullptr)) };
 
     int rows;
     int cols;
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 
         processInput(statusData, eve);
 
-        if (has_mouse())
+        if (hasMouse)
             processMouseState(statusData, lastEve, eve);
 
         using namespace std::string_literals;
