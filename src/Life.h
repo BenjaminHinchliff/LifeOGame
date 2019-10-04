@@ -28,9 +28,9 @@ private:
     int getSurroundingTotal(int y, int x);
     bool strContainsStrsInArr(std::string toSearch, std::vector<std::string> searchStrs);
 
-    std::vector<std::vector<bool>> m_data = {};
     int m_height = 0;
     int m_width = 0;
+    std::vector<std::vector<bool>> m_data = {};
     std::vector<int> m_bornRules = { 3 };
     std::vector<int> m_survivalRules = { 2, 3 };
 };
