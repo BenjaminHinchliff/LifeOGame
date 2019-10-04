@@ -25,8 +25,8 @@ public:
     void setMessage(const char* message);
     void moveToRow(int row);
 private:
-    Align m_align;
     int m_row;
+    Align m_align;
     std::string m_message;
 };
 
