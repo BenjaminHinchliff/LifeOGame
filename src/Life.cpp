@@ -72,7 +72,7 @@ Life::Life(int height, int width, const char* initialRLEFile)
             initer.erase(0, initer.find('\n') + 1);
 
             // delete newline character in the pattern
-            int delChar{};
+            size_t delChar{};
             while ((delChar = initer.find('\n')) != std::string::npos)
             {
                 initer.erase(delChar, 1);
