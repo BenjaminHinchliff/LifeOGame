@@ -8,8 +8,8 @@ Life::Life()
 }
 
 Life::Life(int height, int width, const char* initialRLEFile)
-    : m_data(height, std::vector<bool>(width, false)),
-    m_height{ height }, m_width{ width }
+    : m_height{ height }, m_width{ width },
+    m_data(height, std::vector<bool>(width, false)) 
 {
         std::ifstream rleFile{ initialRLEFile };
         std::stringstream rleString;
